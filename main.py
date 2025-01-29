@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from api.requirementExtractingAgent import RequirementExtractingAgent
 from api.locationSuggestingAgent import LocationSuggestingAgent
 from pydantic import BaseModel
+from typing import Union
 
 
 class Prompt(BaseModel):
@@ -27,7 +28,7 @@ class RequirementSet(BaseModel):
     is_food_required: str
     is_wifi_required: str
     is_auditorium_required: str
-    auditorium_capacity: str
+    auditorium_capacity: Union[str, int]
     itinerary_requirements: list
     hotel_characteristics: list
     dietary_restrictions: str

@@ -4,9 +4,11 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 import api.constants as constants
 
+# TODOs: History nikalana hai aage
 
-class LocationSuggestingAgent:
-    """Location Suggesting Agent"""
+
+class ItineraryGeneratingAgent:
+    """Itinerary Generating Agent"""
 
     def __init__(self):
         """Initialise karega"""
@@ -17,11 +19,11 @@ class LocationSuggestingAgent:
         self.chat_history = []
 
         self.model = genai.GenerativeModel(
-            model_name=constants.LOCATION_SUGGESTER_MODEL,
-            system_instruction=constants.LOCATION_SUGGESTER_SYSTEM_PROMPT,
+            model_name=constants.ITINERARY_GENERATOR_MODEL,
+            system_instruction=constants.ITINERARY_GENERATOR_SYSTEM_PROMPT,
             generation_config=genai.GenerationConfig(
                 response_mime_type="application/json",
-                response_schema=constants.LOCATION_SUGGESTER_SCHEMA,
+                response_schema=constants.ITINERARY_GENERATOR_SCHEMA,
             ),
         )
 
@@ -36,13 +38,15 @@ class LocationSuggestingAgent:
         result = self.model.generate_content(f"{user_prompt}\n---\n{history}")
         return result.text
 
-    def generate_user_prompt(self, requirement_dict, is_regeneration=False):
+    def generate_user_prompt(
+        self, requirement_dict, is_regeneration=False, regen_prompt=""
+    ):
         """User prompt generate hoga for both first time and regeneration"""
 
         user_prompt = (
-            ("Suggest suitable locations based on the following requirements:\n")
+            ("Generate an itinerary based on the following requirements:\n")
             if not is_regeneration
-            else "Regenerate the suitable locations based on the following requirements, make sure previous locations are not repeated:\n"
+            else f"Regenerate the itinerary with the following changes as given in the request - {regen_prompt}\n"
         )
 
         for key, label in [
@@ -62,45 +66,36 @@ class LocationSuggestingAgent:
             ("is_wifi_required", "Is WiFi Required"),
             ("is_auditorium_required", "Is Auditorium Required"),
             ("auditorium_capacity", "Auditorium Capacity"),
-            ("dietary_restrictions", "Dietary Restrictions"),
             ("hotel_characteristics", "Hotel Characteristics"),
+            ("dietary_restrictions", "Dietary Restrictions"),
             ("itinerary_requirements", "Itinerary Requirements"),
         ]:
-            if (
-                key in requirement_dict
-                and requirement_dict[key]
-                and requirement_dict[key] != "None"
-            ):
+            if key in requirement_dict and requirement_dict[key]:
                 user_prompt += f"({label}: {requirement_dict[key]})\n"
-
-        if (
-            "country" in requirement_dict
-            and requirement_dict["country"] != "None"
-            and "state" in requirement_dict
-            and requirement_dict["state"] != "None"
-        ):
-            user_prompt += f"\nMake sure the suggested locations are from {requirement_dict['state']}, {requirement_dict['country']}.\n"
-        elif ("country" in requirement_dict) and requirement_dict["country"] != "None":
-            user_prompt += f"\nMake sure the suggested locations are from {requirement_dict['country']}.\n"
 
         return user_prompt
 
-    def suggest_locations(self, requirements: dict, is_regeneration=False):
-        """Locations suggest karega based on requirements"""
+    def generate_itinerary(
+        self, requirements: dict, is_regeneration=False, regen_prompt=""
+    ):
+        """Itinerary banaega event kliye"""
 
-        user_prompt = self.generate_user_prompt(requirements, is_regeneration)
+        user_prompt = self.generate_user_prompt(
+            requirements, is_regeneration, regen_prompt
+        )
 
         response = self.generate_llm_response(user_prompt)
 
-        self.chat_history.append({"USER", user_prompt})
-        self.chat_history.append({"LLM", response})
+        # self.chat_history.append({"USER", user_prompt})
+        # self.chat_history.append({"LLM", itinerary_generated})
 
-        suggested_locations = json.loads(response)["locations"]
-        return suggested_locations
+        itinerary_generated = json.loads(response)["itinerary"]
+
+        return itinerary_generated
 
 
 if __name__ == "__main__":
-    agent = LocationSuggestingAgent()
+    agent = ItineraryGeneratingAgent()
     requirements = {
         "company_name": "Tech Corp",
         "event_title": "Annual Meetup",
@@ -123,8 +118,8 @@ if __name__ == "__main__":
         "dietary_restrictions": "Vegetarian",
         "itinerary_requirements": ["Workshops", "Networking Sessions"],
     }
-    suggestions = agent.suggest_locations(requirements)
+    itinerary = agent.generate_itinerary(requirements)
     print("-------------------\n")
     print(agent.chat_history)
     print("-------------------\n")
-    print(suggestions)
+    print(itinerary)

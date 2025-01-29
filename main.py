@@ -4,6 +4,7 @@ from api.requirementExtractingAgent import RequirementExtractingAgent
 from api.locationSuggestingAgent import LocationSuggestingAgent
 from pydantic import BaseModel
 from typing import Union
+from api.itineraryGeneratingAgent import ItineraryGeneratingAgent
 
 
 class Prompt(BaseModel):
@@ -37,6 +38,7 @@ class RequirementSet(BaseModel):
 app = FastAPI()
 req_agent = RequirementExtractingAgent()
 loc_agent = LocationSuggestingAgent()
+itin_agent = ItineraryGeneratingAgent()
 
 
 @app.post("/extract-requirements/")
@@ -47,6 +49,11 @@ async def extract_requirements(prompt: Prompt):
 @app.post("/suggest-locations/")
 async def suggest_locations(requirement_set: RequirementSet):
     return loc_agent.suggest_locations(requirement_set)
+
+
+@app.post("/generate-itinerary/")
+async def suggest_locations(requirement_set: RequirementSet):
+    return itin_agent.generate_itinerary(requirement_set)
 
 
 if __name__ == "__main__":

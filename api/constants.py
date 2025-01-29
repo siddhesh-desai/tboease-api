@@ -126,3 +126,50 @@ REQUIREMENT_EXTRACTOR_SCHEMA = content.Schema(
         ),
     },
 )
+
+
+# Location Suggester Constants
+
+LOCATION_SUGGESTER_SYSTEM_PROMPT = """You are a location suggester for events. Your task is to suggest 5 locations based on the provided requirements. Follow these steps:
+1. Read the input requirements provided.
+2. Suggest suitable locations which would be a country, state and city that matches the requirements.
+3. If the country and state is already provided, suggest a city that matches the requirements.
+4. If the country is already provided, suggest a state and city that matches the requirements.
+5. If a city is already provided, add the country, state and explanation of the provided city and do not suggest any other location.
+6. Try to cover variety of countries, states and cities in the suggestions.
+7. Ensure that the suggestions are relevant and feasible.
+8. Also for each location, provide a short explanation about why this location.
+9. Return the suggested locations in a structured JSON format.
+"""
+
+LOCATION_SUGGESTER_MODEL = "gemini-1.5-flash-latest"
+
+LOCATION_SUGGESTER_SCHEMA = content.Schema(
+    type=content.Type.OBJECT,
+    enum=[],
+    required=["locations"],
+    properties={
+        "locations": content.Schema(
+            type=content.Type.ARRAY,
+            items=content.Schema(
+                type=content.Type.OBJECT,
+                enum=[],
+                required=["country", "state", "city", "explanation"],
+                properties={
+                    "country": content.Schema(
+                        type=content.Type.STRING,
+                    ),
+                    "state": content.Schema(
+                        type=content.Type.STRING,
+                    ),
+                    "city": content.Schema(
+                        type=content.Type.STRING,
+                    ),
+                    "explanation": content.Schema(
+                        type=content.Type.STRING,
+                    ),
+                },
+            ),
+        ),
+    },
+)

@@ -13,10 +13,10 @@ class RequirementSet(BaseModel):
     company_name: str
     event_title: str
     event_mood: str
-    number_of_days: str
+    number_of_days: Union[str, int]
     date_range: str
-    number_of_days: str
-    number_of_people: str
+    number_of_days: Union[str, int]
+    number_of_people: Union[str, int]
     age_group_of_people: str
     country: str
     state: str

@@ -66,8 +66,22 @@ class LocationSuggestingAgent:
             ("hotel_characteristics", "Hotel Characteristics"),
             ("itinerary_requirements", "Itinerary Requirements"),
         ]:
-            if key in requirement_dict and requirement_dict[key]:
+            if (
+                key in requirement_dict
+                and requirement_dict[key]
+                and requirement_dict[key] != "None"
+            ):
                 user_prompt += f"({label}: {requirement_dict[key]})\n"
+
+        if (
+            requirement_dict["country"]
+            and requirement_dict["country"] != "None"
+            and requirement_dict["state"]
+            and requirement_dict["state"] != "None"
+        ):
+            user_prompt += f"\nMake sure the suggested locations are from {requirement_dict['state']}, {requirement_dict['country']}.\n"
+        elif requirement_dict["country"] and requirement_dict["country"] != "None":
+            user_prompt += f"\nMake sure the suggested locations are from {requirement_dict['country']}.\n"
 
         return user_prompt
 

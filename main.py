@@ -7,6 +7,7 @@ from typing import Union
 from api.itineraryGeneratingAgent import ItineraryGeneratingAgent
 from dotenv import load_dotenv
 from pymongo import MongoClient
+import os
 
 load_dotenv()
 

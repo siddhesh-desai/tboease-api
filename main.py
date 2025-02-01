@@ -61,8 +61,8 @@ async def suggest_locations(requirement_set: RequirementSet):
 @app.post("/generate-itinerary/")
 async def generate_itinerary(requirement_set: RequirementSet):
     generated_itinerary = itin_agent.generate_itinerary(requirement_set)
-    result = await app.database["events"].insert_one(generated_itinerary)
-    return {"event_id": str(result.inserted_id)}
+    result = app.database["itineraries"].insert_one(generated_itinerary)
+    return {"itinerary_id": str(result.inserted_id)}
 
 
 if __name__ == "__main__":

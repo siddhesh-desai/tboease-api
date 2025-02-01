@@ -5,6 +5,10 @@ from api.locationSuggestingAgent import LocationSuggestingAgent
 from pydantic import BaseModel
 from typing import Union
 from api.itineraryGeneratingAgent import ItineraryGeneratingAgent
+from dotenv import dotenv_values
+from pymongo import MongoClient
+
+config = dotenv_values(".env")
 
 
 class Prompt(BaseModel):
@@ -40,6 +44,9 @@ req_agent = RequirementExtractingAgent()
 loc_agent = LocationSuggestingAgent()
 itin_agent = ItineraryGeneratingAgent()
 
+app.mongodb_client = MongoClient(config["ATLAS_URI"])
+app.database = app.mongodb_client[config["DB_NAME"]]
+
 
 @app.post("/extract-requirements/")
 async def extract_requirements(prompt: Prompt):
@@ -52,8 +59,10 @@ async def suggest_locations(requirement_set: RequirementSet):
 
 
 @app.post("/generate-itinerary/")
-async def suggest_locations(requirement_set: RequirementSet):
-    return itin_agent.generate_itinerary(requirement_set)
+async def generate_itinerary(requirement_set: RequirementSet):
+    generated_itinerary = itin_agent.generate_itinerary(requirement_set)
+    result = await app.database["events"].insert_one(generated_itinerary)
+    return {"event_id": str(result.inserted_id)}
 
 
 if __name__ == "__main__":

@@ -5,10 +5,10 @@ from api.locationSuggestingAgent import LocationSuggestingAgent
 from pydantic import BaseModel
 from typing import Union
 from api.itineraryGeneratingAgent import ItineraryGeneratingAgent
-from dotenv import dotenv_values
+from dotenv import load_dotenv
 from pymongo import MongoClient
 
-config = dotenv_values(".env")
+load_dotenv()
 
 
 class Prompt(BaseModel):
@@ -44,8 +44,8 @@ req_agent = RequirementExtractingAgent()
 loc_agent = LocationSuggestingAgent()
 itin_agent = ItineraryGeneratingAgent()
 
-app.mongodb_client = MongoClient(config["ATLAS_URI"])
-app.database = app.mongodb_client[config["DB_NAME"]]
+app.mongodb_client = MongoClient(os.getenv("ATLAS_URI"))
+app.database = app.mongodb_client[os.getenv("DB_NAME")]
 
 
 @app.post("/extract-requirements/")

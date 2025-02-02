@@ -40,6 +40,7 @@ class RequirementExtractingAgent:
         """Natural language text se requirements extract karega"""
 
         user_prompt = self.generate_user_prompt(user_natural_language_text)
+        print(user_prompt)
 
         response = self.generate_llm_response(user_prompt)
 

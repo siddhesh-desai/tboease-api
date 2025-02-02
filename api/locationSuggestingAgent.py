@@ -14,7 +14,7 @@ class LocationSuggestingAgent:
         load_dotenv()
         genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-        self.chat_history = []
+        # self.chat_history = []
 
         self.model = genai.GenerativeModel(
             model_name=constants.LOCATION_SUGGESTER_MODEL,
@@ -28,12 +28,12 @@ class LocationSuggestingAgent:
     def generate_llm_response(self, user_prompt):
         """LLM Response dega"""
 
-        history = "Chat History:\n"
+        # history = "Chat History:\n"
 
-        if self.chat_history != []:
-            history = "\n".join([f"{role}: {text}" for role, text in self.chat_history])
+        # if self.chat_history != []:
+        #     history = "\n".join([f"{role}: {text}" for role, text in self.chat_history])
 
-        result = self.model.generate_content(f"{user_prompt}\n---\n{history}")
+        result = self.model.generate_content(f"{user_prompt}")
         return result.text
 
     def generate_user_prompt(self, requirement_dict, is_regeneration=False):
@@ -92,8 +92,8 @@ class LocationSuggestingAgent:
 
         response = self.generate_llm_response(user_prompt)
 
-        self.chat_history.append({"USER", user_prompt})
-        self.chat_history.append({"LLM", response})
+        # self.chat_history.append({"USER", user_prompt})
+        # self.chat_history.append({"LLM", response})
 
         suggested_locations = json.loads(response)["locations"]
         return suggested_locations
@@ -125,6 +125,6 @@ if __name__ == "__main__":
     }
     suggestions = agent.suggest_locations(requirements)
     print("-------------------\n")
-    print(agent.chat_history)
+    # print(agent.chat_history)
     print("-------------------\n")
     print(suggestions)

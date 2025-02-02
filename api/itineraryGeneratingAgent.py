@@ -16,7 +16,7 @@ class ItineraryGeneratingAgent:
         load_dotenv()
         genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-        self.chat_history = []
+        # self.chat_history = []
 
         self.model = genai.GenerativeModel(
             model_name=constants.ITINERARY_GENERATOR_MODEL,
@@ -32,10 +32,10 @@ class ItineraryGeneratingAgent:
 
         history = "Chat History:\n"
 
-        if self.chat_history != []:
-            history = "\n".join([f"{role}: {text}" for role, text in self.chat_history])
+        # if self.chat_history != []:
+        #     history = "\n".join([f"{role}: {text}" for role, text in self.chat_history])
 
-        result = self.model.generate_content(f"{user_prompt}\n---\n{history}")
+        result = self.model.generate_content(f"{user_prompt}")
         return result.text
 
     def generate_user_prompt(
@@ -43,35 +43,34 @@ class ItineraryGeneratingAgent:
     ):
         """User prompt generate hoga for both first time and regeneration"""
 
-        user_prompt = (
-            ("Generate an itinerary based on the following requirements:\n")
-            if not is_regeneration
-            else f"Regenerate the itinerary with the following changes as given in the request - {regen_prompt}\n"
-        )
+        user_prompt = "Generate an itinerary based on the following requirements:\n"
 
-        for key, label in [
-            ("country", "Country"),
-            ("state", "State"),
-            ("city", "City"),
-            ("event_title", "Event Name"),
-            ("event_mood", "Event Mood"),
-            ("number_of_days", "Number of Days"),
-            ("date_range", "Date Range"),
-            ("number_of_people", "Number of People"),
-            ("age_group_of_people", "Age Group of People"),
-            ("budget", "Budget"),
-            ("hotel_quality", "Hotel Quality"),
-            ("is_accomodation_required", "Is Accomodation Required"),
-            ("is_food_required", "Food Provided"),
-            ("is_wifi_required", "Is WiFi Required"),
-            ("is_auditorium_required", "Is Auditorium Required"),
-            ("auditorium_capacity", "Auditorium Capacity"),
-            ("hotel_characteristics", "Hotel Characteristics"),
-            ("dietary_restrictions", "Dietary Restrictions"),
-            ("itinerary_requirements", "Itinerary Requirements"),
-        ]:
-            if key in requirement_dict and requirement_dict[key]:
-                user_prompt += f"({label}: {requirement_dict[key]})\n"
+        user_prompt += f"{requirement_dict}"
+
+        # for key, label in [
+        #     ("country", "Country"),
+        #     ("state", "State"),
+        #     ("city", "City"),
+        #     ("event_title", "Event Name"),
+        #     ("event_mood", "Event Mood"),
+        #     ("number_of_days", "Number of Days"),
+        #     ("date_range", "Date Range"),
+        #     ("number_of_people", "Number of People"),
+        #     ("age_group_of_people", "Age Group of People"),
+        #     ("budget", "Budget"),
+        #     ("hotel_quality", "Hotel Quality"),
+        #     ("is_accomodation_required", "Is Accomodation Required"),
+        #     ("is_food_required", "Food Provided"),
+        #     ("is_wifi_required", "Is WiFi Required"),
+        #     ("is_auditorium_required", "Is Auditorium Required"),
+        #     ("auditorium_capacity", "Auditorium Capacity"),
+        #     ("hotel_characteristics", "Hotel Characteristics"),
+        #     ("dietary_restrictions", "Dietary Restrictions"),
+        #     ("itinerary_requirements", "Itinerary Requirements"),
+        # ]:
+        #     print(key, label)
+        #     # if key in list(requirement_dict.keys()) and requirement_dict[key]:
+        #     user_prompt += f")\n"
 
         return user_prompt
 
@@ -83,6 +82,8 @@ class ItineraryGeneratingAgent:
         user_prompt = self.generate_user_prompt(
             requirements, is_regeneration, regen_prompt
         )
+
+        print(user_prompt)
 
         response = self.generate_llm_response(user_prompt)
 
@@ -120,6 +121,6 @@ if __name__ == "__main__":
     }
     itinerary = agent.generate_itinerary(requirements)
     print("-------------------\n")
-    print(agent.chat_history)
+    # print(agent.chat_history)
     print("-------------------\n")
     print(itinerary)

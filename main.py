@@ -38,6 +38,7 @@ class RequirementSet(BaseModel):
     itinerary_requirements: list
     hotel_characteristics: list
     dietary_restrictions: str
+    owner_id: Union[str, None] = None
 
 
 app = FastAPI()
@@ -62,6 +63,7 @@ async def suggest_locations(requirement_set: RequirementSet):
 @app.post("/generate-itinerary/")
 async def generate_itinerary(requirement_set: RequirementSet):
     generated_itinerary = itin_agent.generate_itinerary(requirement_set)
+    generate_itinerary["owner_id"] = requirement_set.owner_id
     result = app.database["itineraries"].insert_one(generated_itinerary)
     return {"itinerary_id": str(result.inserted_id)}
 

@@ -71,9 +71,22 @@ async def generate_itinerary(requirement_set: RequirementSet):
     return {"itinerary_id": str(result.inserted_id)}
 
 
+from bson import ObjectId
+from fastapi import HTTPException
+
+
 @app.get("/get-itinerary/{itinerary_id}")
 async def get_itinerary(itinerary_id: str):
-    itinerary = app.database["itineraries"].find_one({"_id": itinerary_id})
+    try:
+        itinerary = app.database["itineraries"].find_one(
+            {"_id": ObjectId(itinerary_id)}
+        )
+        if itinerary is None:
+            raise HTTPException(status_code=404, detail="Itinerary not found")
+        itinerary["_id"] = str(itinerary["_id"])
+        return itinerary
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
     return itinerary
 
 

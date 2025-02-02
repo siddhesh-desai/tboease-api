@@ -71,5 +71,11 @@ async def generate_itinerary(requirement_set: RequirementSet):
     return {"itinerary_id": str(result.inserted_id)}
 
 
+@app.get("/get-itinerary/{itinerary_id}")
+async def get_itinerary(itinerary_id: str):
+    itinerary = app.database["itineraries"].find_one({"_id": itinerary_id})
+    return itinerary
+
+
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

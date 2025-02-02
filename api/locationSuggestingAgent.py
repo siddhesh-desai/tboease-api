@@ -40,38 +40,38 @@ class LocationSuggestingAgent:
         """User prompt generate hoga for both first time and regeneration"""
 
         user_prompt = (
-            ("Suggest suitable locations based on the following requirements:\n")
-            if not is_regeneration
-            else "Regenerate the suitable locations based on the following requirements, make sure previous locations are not repeated:\n"
+            "Suggest suitable locations based on the following requirements:\n"
         )
 
-        for key, label in [
-            ("country", "Country"),
-            ("state", "State"),
-            ("city", "City"),
-            ("event_title", "Event Name"),
-            ("event_mood", "Event Mood"),
-            ("number_of_days", "Number of Days"),
-            ("date_range", "Date Range"),
-            ("number_of_people", "Number of People"),
-            ("age_group_of_people", "Age Group of People"),
-            ("budget", "Budget"),
-            ("hotel_quality", "Hotel Quality"),
-            ("is_accomodation_required", "Is Accomodation Required"),
-            ("is_food_required", "Food Provided"),
-            ("is_wifi_required", "Is WiFi Required"),
-            ("is_auditorium_required", "Is Auditorium Required"),
-            ("auditorium_capacity", "Auditorium Capacity"),
-            ("dietary_restrictions", "Dietary Restrictions"),
-            ("hotel_characteristics", "Hotel Characteristics"),
-            ("itinerary_requirements", "Itinerary Requirements"),
-        ]:
-            if (
-                key in requirement_dict
-                and requirement_dict[key]
-                and requirement_dict[key] != "None"
-            ):
-                user_prompt += f"({label}: {requirement_dict[key]})\n"
+        user_prompt += f"{requirement_dict}"
+
+        # for key, label in [
+        #     ("country", "Country"),
+        #     ("state", "State"),
+        #     ("city", "City"),
+        #     ("event_title", "Event Name"),
+        #     ("event_mood", "Event Mood"),
+        #     ("number_of_days", "Number of Days"),
+        #     ("date_range", "Date Range"),
+        #     ("number_of_people", "Number of People"),
+        #     ("age_group_of_people", "Age Group of People"),
+        #     ("budget", "Budget"),
+        #     ("hotel_quality", "Hotel Quality"),
+        #     ("is_accomodation_required", "Is Accomodation Required"),
+        #     ("is_food_required", "Food Provided"),
+        #     ("is_wifi_required", "Is WiFi Required"),
+        #     ("is_auditorium_required", "Is Auditorium Required"),
+        #     ("auditorium_capacity", "Auditorium Capacity"),
+        #     ("dietary_restrictions", "Dietary Restrictions"),
+        #     ("hotel_characteristics", "Hotel Characteristics"),
+        #     ("itinerary_requirements", "Itinerary Requirements"),
+        # ]:
+        #     if (
+        #         key in requirement_dict
+        #         and requirement_dict[key]
+        #         and requirement_dict[key] != "None"
+        #     ):
+        #         user_prompt += f"({label}: {requirement_dict[key]})\n"
 
         if (
             "country" in requirement_dict
